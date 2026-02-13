@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Valentine Surprise</title>
+    <style>
+        :root {
+            --dark-bg: #0f0c29;
+            --midnight: #302b63;
+            --envelope-pink: #ffdae0;
+            --flap-pink: #ffb1be;
+            --charcoal-black: #111111;
+            --text-white: #f8f8f8;
+            --accent-pink: #ff85a1;
+        }
+
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(to bottom, #0f0c29, #302b63, #24243e);
+            overflow: hidden;
+            font-family: 'Georgia', serif;
+        }
+
+        #sparkle-container {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .sparkle {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            opacity: 0;
+            animation: moveSparkle var(--duration) infinite ease-in-out;
+        }
+
+        @keyframes moveSparkle {
+            0% { opacity: 0; transform: translateY(0) scale(0.5); }
+            50% { opacity: 0.8; transform: translateY(-20px) scale(1.2); }
+            100% { opacity: 0; transform: translateY(-40px) scale(0.5); }
+        }
+
+        #fireworks-canvas {
+            position: absolute;
+            top: 0; left: 0;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .main-stage {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: opacity 1s ease, transform 1s ease;
+            z-index: 10;
+        }
+
+        .envelope-wrapper {
+            position: relative;
+            width: 450px;
+            height: 300px;
+            background-color: var(--envelope-pink);
+            border-radius: 10px;
+            box-shadow: 0 0 40px rgba(255, 177, 190, 0.4);
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            padding-bottom: 70px;
+            box-sizing: border-box;
+            margin-bottom: 40px;
+        }
+
+        .envelope-text {
+            color: var(--accent-pink);
+            font-size: 2.8rem;
+            font-family: 'Brush Script MT', cursive;
+            z-index: 50;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .envelope-wrapper::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            width: 0; height: 0;
+            border-left: 225px solid transparent;
+            border-right: 225px solid transparent;
+            border-top: 160px solid var(--flap-pink);
+            z-index: 40;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .open-btn {
+            padding: 18px 50px;
+            font-size: 1.3rem;
+            background: linear-gradient(45deg, var(--accent-pink), #ff6b8e);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(255, 107, 142, 0.5);
+            transition: all 0.3s ease;
+            font-family: 'Georgia', serif;
+            letter-spacing: 1px;
+        }
+
+        .open-btn:hover {
+            transform: scale(1.1) translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 107, 142, 0.7);
+        }
+
+        .letter {
+            position: fixed;
+            top: 60%;
+            left: 50%;
+            transform: translate(-50%, -40%) scale(0.8);
+            width: 550px;
+            height: 600px;
+            background-color: var(--charcoal-black);
+            color: var(--text-white);
+            padding: 50px;
+            box-sizing: border-box;
+            border-radius: 15px;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 100;
+            transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 100px rgba(0, 0, 0, 0.8), 0 0 40px rgba(255, 133, 161, 0.2);
+        }
+
+        .show-letter .letter {
+            opacity: 1;
+            pointer-events: auto;
+            top: 50%;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .show-letter .main-stage {
+            opacity: 0;
+            transform: scale(0.9);
+            pointer-events: none;
+        }
+
+        h2 { 
+            color: var(--flap-pink); 
+            text-align: center; 
+            font-size: 3rem;
+            font-family: 'Brush Script MT', cursive;
+            margin-top: 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 15px;
+            font-weight: normal;
+        }
+        
+        #typewriter-text { line-height: 2; font-size: 1.25rem; font-weight: 300; white-space: pre-wrap; }
+
+        .letter::-webkit-scrollbar { width: 6px; }
+        .letter::-webkit-scrollbar-thumb { background: var(--accent-pink); border-radius: 10px; }
+    </style>
+</head>
+<body id="bodyTag">
+
+    <audio id="bgMusic" loop>
+        <source src="https://files.catbox.moe/jzfjw7.mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="sparkle-container"></div>
+    <canvas id="fireworks-canvas"></canvas>
+
+    <div class="main-stage">
+        <div class="envelope-wrapper">
+            <div class="envelope-text">Happy Valentine</div>
+        </div>
+        <button class="open-btn" onclick="openLetter()">Open My Heart</button>
+    </div>
+
+    <div class="letter">
+        <h2>To My Dearest Grumpy 💜</h2>
+        <div id="typewriter-text"></div>
+    </div>
+
+    <script>
+        // Store the text for the typewriter
+        const message = `Happy Valentine's Day my love! 
+
+We have come quite far right? From playing together on MCGG and now we are celebrating our first Valentine's Day together. Who would've thought. To be honest, from the day we started talking, I knew you were different. Even though we almost stopped talking few times, it just did not feel right. I wanted to be with you and now that I have you, I want to stay with you no matter what happens. You make me feel emotions that I thought would be impossible for me to experience and I want to thank you.
+
+Thank you for being the grumpy I know and love. You made me realised how fun it is to actually be in love and for that I want to thank you for sharing your love with me. You make it exciting to live every day so thank you for being another reason for me to live. Thank you for playing games for me, making times for me, buying me foods and present, encourage me to call, watch my favourite show and movies, and including me in your life. You're funny, kind, patient, smart, and maybe a bit silly :p and I could not be any more grateful to call someone so amazing as my boyfriend. I hope I've been good to you because you deserve the whole world. Keep being you, baby.
+
+Bonus: You are handsome, hot, and cute! I love your face so much and I love you endlessly. 🧸
+
+Yours forever,
+Mel`;
+
+        function typeWriter(text, i, fnCallback) {
+            if (i < text.length) {
+                document.getElementById("typewriter-text").innerHTML = text.substring(0, i+1);
+                // Auto-scroll as it types
+                const letterDiv = document.querySelector('.letter');
+                letterDiv.scrollTop = letterDiv.scrollHeight;
+                
+                setTimeout(function() {
+                    typeWriter(text, i + 1, fnCallback)
+                }, 30); // SPEED OF TYPING (lower = faster)
+            } else if (typeof fnCallback == 'function') {
+                fnCallback();
+            }
+        }
+
+        function createSparkles() {
+            const container = document.getElementById('sparkle-container');
+            const sparkleCount = 80;
+            for (let i = 0; i < sparkleCount; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.className = 'sparkle';
+                const x = Math.random() * 100;
+                const y = Math.random() * 100;
+                const size = Math.random() * 3 + 1;
+                const delay = Math.random() * 5;
+                const duration = 3 + Math.random() * 4;
+                sparkle.style.left = `${x}%`;
+                sparkle.style.top = `${y}%`;
+                sparkle.style.width = `${size}px`;
+                sparkle.style.height = `${size}px`;
+                sparkle.style.animationDelay = `${delay}s`;
+                sparkle.style.setProperty('--duration', `${duration}s`);
+                container.appendChild(sparkle);
+            }
+        }
+        createSparkles();
+
+        let fireworksActive = false;
+        function openLetter() {
+            const music = document.getElementById('bgMusic');
+            music.play().catch(e => console.log("Audio play blocked."));
+            
+            document.getElementById('bodyTag').classList.add('show-letter');
+            
+            // Wait for the letter slide animation to finish, then start typing
+            setTimeout(() => { 
+                fireworksActive = true; 
+                typeWriter(message, 0);
+            }, 1000);
+        }
+
+        // --- Heart Fireworks Logic ---
+        const canvas = document.getElementById('fireworks-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        let particles = [];
+
+        class Particle {
+            constructor(x, y, vx, vy) {
+                this.x = x; this.y = y;
+                this.vx = vx; this.vy = vy;
+                this.alpha = 1;
+            }
+            draw() {
+                ctx.globalAlpha = this.alpha;
+                ctx.beginPath();
+                ctx.moveTo(this.x, this.y);
+                ctx.bezierCurveTo(this.x, this.y-3, this.x-5, this.y-3, this.x-5, this.y);
+                ctx.bezierCurveTo(this.x-5, this.y+4, this.x, this.y+7, this.x, this.y+9);
+                ctx.bezierCurveTo(this.x, this.y+7, this.x+5, this.y+4, this.x+5, this.y);
+                ctx.bezierCurveTo(this.x+5, this.y-3, this.x, this.y-3, this.x, this.y);
+                ctx.fillStyle = "#ffb1be";
+                ctx.fill();
+            }
+            update() {
+                this.x += this.vx; this.y += this.vy;
+                this.vy += 0.05;
+                this.alpha -= 0.01;
+            }
+        }
+
+        function explode(x, y) {
+            for(let i=0; i<25; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 4 + 2;
+                particles.push(new Particle(x, y, Math.cos(angle)*speed, Math.sin(angle)*speed));
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if(fireworksActive && Math.random() < 0.04) {
+                explode(Math.random()*canvas.width, Math.random()*canvas.height*0.7);
+            }
+            particles.forEach((p, i) => {
+                p.update(); p.draw();
+                if(p.alpha <= 0) particles.splice(i, 1);
+            });
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        window.onresize = () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        };
+    </script>
+</body>
+</html>
